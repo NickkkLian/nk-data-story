@@ -1,0 +1,139 @@
+{
+ "data": {
+  "file": "bakery-2025.csv",
+  "sha256": "586f587ce99f48d611313c4e7a9bdb69696870fdbbcf6bb3cd1f7c4d1e4cede9",
+  "rows": 4996,
+  "synthetic": true
+ },
+ "question": "Are Mondays worth opening through the winter?",
+ "decision": "Whether to keep the shop open on Mondays from October to March",
+ "headline": "In the last quarter, Mondays brought in {fig:monday_share_q4} of paid sales",
+ "figures": [
+  {
+   "id": "monday_share_q4",
+   "label": "Mondays' share of paid sales",
+   "measure": "share",
+   "of": "sum",
+   "column": "amount",
+   "where": [
+    [
+     "date:weekday",
+     "==",
+     "Mon"
+    ]
+   ],
+   "denominator": {
+    "where": [
+     [
+      "status",
+      "==",
+      "paid"
+     ]
+    ]
+   },
+   "window": {
+    "column": "date",
+    "from": "2025-10-01",
+    "to": "2025-12-31"
+   }
+  },
+  {
+   "id": "monday_change",
+   "label": "Paid Monday sales, fourth quarter against third",
+   "measure": "change",
+   "of": "sum",
+   "column": "amount",
+   "where": [
+    [
+     "date:weekday",
+     "==",
+     "Mon"
+    ],
+    [
+     "status",
+     "==",
+     "paid"
+    ]
+   ],
+   "from_window": {
+    "column": "date",
+    "from": "2025-07-01",
+    "to": "2025-09-30"
+   },
+   "window": {
+    "column": "date",
+    "from": "2025-10-01",
+    "to": "2025-12-31"
+   }
+  },
+  {
+   "id": "weekday_daily_q4",
+   "label": "Average paid sales per day, by weekday",
+   "measure": "mean",
+   "column": "amount",
+   "by": "date:weekday",
+   "level": "day",
+   "where": [
+    [
+     "status",
+     "==",
+     "paid"
+    ]
+   ],
+   "window": {
+    "column": "date",
+    "from": "2025-10-01",
+    "to": "2025-12-31"
+   },
+   "prefix": "$"
+  },
+  {
+   "id": "monthly_sales",
+   "label": "Paid sales per month",
+   "measure": "sum",
+   "column": "amount",
+   "by": "date:month",
+   "where": [
+    [
+     "status",
+     "==",
+     "paid"
+    ]
+   ],
+   "window": {
+    "column": "date",
+    "from": "2025-01-01",
+    "to": "2025-12-31"
+   },
+   "prefix": "$"
+  }
+ ],
+ "evidence": [
+  "Paid sales on Mondays moved {fig:monday_change} from the third quarter to the fourth, while the rest of the year held."
+ ],
+ "charts": [
+  {
+   "id": "weekday",
+   "type": "bar",
+   "figure": "weekday_daily_q4",
+   "title": "A winter Monday sells the least of any day"
+  },
+  {
+   "id": "months",
+   "type": "line",
+   "figure": "monthly_sales",
+   "title": "The year itself did not slow down"
+  }
+ ],
+ "next_step": "Close on Mondays for four weeks in January and compare the other six days with the same weeks a year earlier.",
+ "does_not_answer": [
+  "Whether Monday customers would come on another day instead",
+  "What a closed Monday saves in wages and energy: the table holds sales only"
+ ],
+ "limits": [
+  "One shop and one year, with no weather or holiday data.",
+  "Each weekday average in the last quarter rests on about thirteen days of that weekday, a small sample.",
+  "Sales with no amount are left out of every sum; each figure says how many it skipped.",
+  "Rows exported twice are counted as they are; the profile lists them."
+ ]
+}
