@@ -130,7 +130,7 @@
 
   --info: var(--accent-text); --info-tint: var(--accent-tint); --info-tint-text: var(--accent-tint-text);
   --focus:         #94484a;
-  --overlay:       rgb(40 23 74 / 0.50);
+  --overlay:       rgb(36 35 41 / 0.50);   /* shadow hue, low chroma: a full-screen veil dims, it does not repaint */
   --selection-bg:  var(--accent-tint);
 
   /* ---- 7. Grain: the only non-flat surface treatment ----
@@ -272,7 +272,7 @@
   --danger-hover: #771200;
   --on-danger: #fdf3f1;
   --focus: #984d5a;
-  --overlay: rgb(0 34 78 / 0.50);
+  --overlay: rgb(32 36 42 / 0.50);
   --viz-div-mid: #d0d7e0;
   --viz-unknown: repeating-linear-gradient(135deg, #b6bec9 0 3px, transparent 3px 7px);
   --shadow-1: 1px 1px 2px rgb(0 34 78 / 0.06), 2px 3px 8px -2px rgb(0 34 78 / 0.10);
@@ -341,7 +341,7 @@
   --danger-tint-text: #8f1a40;
   --on-danger: #fdf4f0;
   --focus: #984b54;
-  --overlay: rgb(44 22 72 / 0.50);
+  --overlay: rgb(37 35 41 / 0.50);
   --viz-div-mid: #d7d4df;
   --viz-unknown: repeating-linear-gradient(135deg, #bfbbc8 0 3px, transparent 3px 7px);
   --shadow-1: 1px 1px 2px rgb(44 22 72 / 0.06), 2px 3px 8px -2px rgb(44 22 72 / 0.10);
@@ -415,7 +415,7 @@
     --info-tint: var(--accent-tint);
     --info-tint-text: var(--accent-tint-text);
     --focus: #c78383;
-    --overlay: rgb(6 0 21 / 0.72);
+    --overlay: rgb(4 3 7 / 0.72);
     --selection-bg: var(--accent-tint);
     --grain-opacity: 0.046;
     --viz-1: #d67072;
@@ -516,7 +516,7 @@
     --info-tint: var(--accent-tint);
     --info-tint-text: var(--accent-tint-text);
     --focus: #c7848d;
-    --overlay: rgb(0 2 23 / 0.72);
+    --overlay: rgb(2 4 7 / 0.72);
     --selection-bg: var(--accent-tint);
     --grain-opacity: 0.046;
     --viz-1: #d67072;
@@ -617,7 +617,7 @@
     --info-tint: var(--accent-tint);
     --info-tint-text: var(--accent-tint-text);
     --focus: #c68388;
-    --overlay: rgb(7 0 20 / 0.72);
+    --overlay: rgb(4 3 7 / 0.72);
     --selection-bg: var(--accent-tint);
     --grain-opacity: 0.046;
     --viz-1: #d67072;
@@ -722,7 +722,7 @@
   --info-tint: var(--accent-tint);
   --info-tint-text: var(--accent-tint-text);
   --focus: #c78383;
-  --overlay: rgb(6 0 21 / 0.72);
+  --overlay: rgb(4 3 7 / 0.72);
   --selection-bg: var(--accent-tint);
   --grain-opacity: 0.046;
   --viz-1: #d67072;
@@ -807,7 +807,7 @@
   --info-tint: var(--accent-tint);
   --info-tint-text: var(--accent-tint-text);
   --focus: #c78383;
-  --overlay: rgb(6 0 21 / 0.72);
+  --overlay: rgb(4 3 7 / 0.72);
   --selection-bg: var(--accent-tint);
   --grain-opacity: 0.046;
   --viz-1: #d67072;
@@ -910,7 +910,7 @@
   --info-tint: var(--accent-tint);
   --info-tint-text: var(--accent-tint-text);
   --focus: #c7848d;
-  --overlay: rgb(0 2 23 / 0.72);
+  --overlay: rgb(2 4 7 / 0.72);
   --selection-bg: var(--accent-tint);
   --grain-opacity: 0.046;
   --viz-1: #d67072;
@@ -995,7 +995,7 @@
   --info-tint: var(--accent-tint);
   --info-tint-text: var(--accent-tint-text);
   --focus: #c68388;
-  --overlay: rgb(7 0 20 / 0.72);
+  --overlay: rgb(4 3 7 / 0.72);
   --selection-bg: var(--accent-tint);
   --grain-opacity: 0.046;
   --viz-1: #d67072;
