@@ -175,7 +175,7 @@ body{margin:0;background:var(--bg);color:var(--text);font:var(--text-md)/var(--l
 body::before{content:"";position:fixed;inset:0;background-image:var(--grain);opacity:var(--grain-opacity);pointer-events:none;z-index:0}
 .band{background:var(--band);color:var(--on-band)}
 .topbar{position:relative;z-index:2;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--gutter);border-bottom:1px solid var(--band-line)}
-.topbar .mark{font:600 var(--text-sm)/1 var(--font-mono);letter-spacing:.02em;white-space:nowrap} .topbar .mark b{color:var(--point)}
+.topbar .mark{font:600 var(--text-sm)/1 var(--font-mono);letter-spacing:.02em;white-space:nowrap} .topbar .mark b,.topbar .mark svg{color:var(--point)} .topbar .mark svg{vertical-align:-1px}
 .topbar .spacer{flex:1}
 .pill{font:var(--text-2xs)/1 var(--font-mono);color:var(--on-band-2);border:1px solid var(--band-line);border-radius:999px;padding:5px 9px;white-space:nowrap}
 .appearance{position:relative} .appearance summary{cursor:pointer;list-style:none;font:500 var(--text-xs)/1 var(--font-mono);padding:8px 12px;border:1px solid var(--band-line);border-radius:999px;color:var(--on-band)}
@@ -222,6 +222,7 @@ th{background:var(--surface-2);color:var(--text-2);font-size:var(--text-xs);bord
 td.mono{font-family:var(--font-mono);font-size:var(--text-xs)}
 .scroll{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-md)}
 .checks li{font:var(--text-xs)/1.5 var(--font-mono)} .checks .warn{color:var(--warning-tint-text)}
+.checks .warn::before{content:"";display:inline-block;width:.9em;height:.9em;margin-right:.4em;vertical-align:-.1em;background:currentColor;-webkit-mask:var(--glyph) center/contain no-repeat;mask:var(--glyph) center/contain no-repeat;--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 1.6 11 10.4H1z' fill='none' stroke='black' stroke-width='1.3' stroke-linejoin='round'/%3E%3Cpath d='M6 4.8v2.6' stroke='black' stroke-width='1.3' stroke-linecap='round'/%3E%3Ccircle cx='6' cy='8.9' r='.7'/%3E%3C/svg%3E")}
 footer{position:relative;z-index:1;padding:var(--space-6) var(--gutter) var(--space-10);font-size:var(--text-xs)}
 footer .cols{max-width:980px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-5)}
 footer h3{font:600 var(--text-2xs)/1.3 var(--font-mono);letter-spacing:var(--tracking-caps);text-transform:uppercase;color:var(--on-band-2);margin:0 0 var(--space-2)}
@@ -305,7 +306,7 @@ def build(report, table, sha256, min_n=30, tokens_css=None):
         f'<td class="num">{results[fid]["n"]:,}</td><td>{esc(aperture(f, results[fid], table))}</td></tr>' for fid, f in figs.items())
     unanswered = "".join(f"<li>{esc(x)}</li>" for x in report.get("does_not_answer") or [] if x.strip())
     limits = "".join(f"<li>{esc(x)}</li>" for x in report.get("limits") or [] if x.strip())
-    checks = ("<section class=\"checks\"><h2>Checks</h2><ul>" + "".join(f'<li class="warn">⚠ {esc(c)} {esc(m)}</li>' for c, m in warns) + "</ul></section>") if warns else ""
+    checks = ("<section class=\"checks\"><h2>Checks</h2><ul>" + "".join(f'<li class="warn">{esc(c)} {esc(m)}</li>' for c, m in warns) + "</ul></section>") if warns else ""
     pill = '<span class="pill">Demo · synthetic data</span>' if data.get("synthetic") else ""
     first_unanswered = next((x for x in report.get("does_not_answer") or [] if x.strip()), "")
     tokens_css = tokens_css if tokens_css is not None else open(TOKENS, encoding="utf-8").read()
@@ -321,7 +322,7 @@ def build(report, table, sha256, min_n=30, tokens_css=None):
 <style>{tokens_css}</style>
 <style>{CSS}</style>
 </head><body>
-<header class="topbar band"><span class="mark"><b>●</b> data story</span>{pill}<span class="spacer"></span>{PICKER}</header>
+<header class="topbar band"><span class="mark"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> data story</span>{pill}<span class="spacer"></span>{PICKER}</header>
 <section class="plate band" aria-labelledby="headline"><div class="plate-in">
 <p class="eyebrow">{esc(report.get("question", ""))}</p>
 <h1 id="headline">{headline}</h1>
@@ -424,7 +425,11 @@ def selftest():
             small = json.loads(json.dumps(rep))
             small["figures"][0]["window"] = {"column": "date", "from": "2025-01-01", "to": "2025-01-10"}
             page4, _, w4 = build(small, t, sha, tokens_css="")
-            chk(page4 is not None and "⚠ D07" in page4 and [c for c, _ in w4] == ["D07"], "R12 check warnings are listed on the page")
+            chk(page4 is not None and '<li class="warn">D07' in page4 and [c for c, _ in w4] == ["D07"], "R12 check warnings are listed on the page")
+            # the owner, 2026-09-22: no emoji on a public page — icons are line SVG. Arrows are punctuation and stay;
+            # symbols drawn as icons (checks, crosses, stars, dots, warning signs, circled marks) do not
+            pict = re.findall("[\u2295-\u22a1\u2300-\u23ff\u25a0-\u25ff\u2600-\u27bf\u2b00-\u2bff\U0001f000-\U0001faff\ufe0f]", page4 or "")
+            chk(page4 is not None and not pict, f"R22 the report page carries no emoji or icon symbols ({''.join(pict)})")
             chk("Demo · synthetic data" not in page, "R13 no Demo marker unless data.synthetic is set")
             syn = json.loads(json.dumps(rep))
             syn["data"]["synthetic"] = True
