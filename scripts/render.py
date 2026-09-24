@@ -426,7 +426,7 @@ def selftest():
             small["figures"][0]["window"] = {"column": "date", "from": "2025-01-01", "to": "2025-01-10"}
             page4, _, w4 = build(small, t, sha, tokens_css="")
             chk(page4 is not None and '<li class="warn">D07' in page4 and [c for c, _ in w4] == ["D07"], "R12 check warnings are listed on the page")
-            # the owner, 2026-09-22: no emoji on a public page — icons are line SVG. Arrows are punctuation and stay;
+            # no emoji on a public page — icons are line SVG. Arrows are punctuation and stay;
             # symbols drawn as icons (checks, crosses, stars, dots, warning signs, circled marks) do not
             pict = re.findall("[\u2295-\u22a1\u2300-\u23ff\u25a0-\u25ff\u2600-\u27bf\u2b00-\u2bff\U0001f000-\U0001faff\ufe0f]", page4 or "")
             chk(page4 is not None and not pict, f"R22 the report page carries no emoji or icon symbols ({''.join(pict)})")

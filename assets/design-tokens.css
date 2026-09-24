@@ -154,7 +154,7 @@
   --viz-grid: var(--border); --viz-axis: var(--text-3);
   --viz-unknown: repeating-linear-gradient(135deg, #bebcc8 0 3px, transparent 3px 7px);
 
-  /* ---- 9. Type (unchanged from v3.1: the brief changed the palette, not the type) ---- */
+  /* ---- 9. Type (unchanged from v3.1: v4 changed the palette, not the type) ---- */
   --font-display: "Fraunces", "Fraunces Fallback", Georgia, "Noto Serif SC", "Songti SC", serif;
   --font-sans:    "Inter", "Inter Fallback", system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
   --font-mono:    "Space Mono", "Space Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;

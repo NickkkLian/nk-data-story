@@ -4,8 +4,8 @@
 
 An agent skill for [Claude Code](https://code.claude.com) and [OpenAI Codex](https://developers.openai.com/codex). Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.
 
-Part of [nickkk-skills](https://github.com/NickkkLian/nickkk-skills) — agent skills whose scripts were broken on purpose
-before release to prove their checks react.
+Part of [nickkk-skills](https://github.com/NickkkLian/nickkk-skills) — agent skills that ship a self-test with every script; the Verify
+section below says which of them were broken on purpose before release to prove they react.
 
 ![nk-data-story demo: one idea in, a finished page out](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/nk-data-story.gif)
 
@@ -28,6 +28,14 @@ The full procedure, the boundaries and where the rules came from are in [SKILL.m
 6. Check
 7. Render and look at it
 8. Share the page, not retyped numbers
+
+## Why it is built this way
+
+**The idea.** A spreadsheet becomes one page a person can act on: the headline says what the data shows, every number on the page is recomputed from the file and followed by what it was computed on, and the page ends with what the data cannot answer. The agent never types a number into the report.
+
+**Where it came from.** The author's own rules for analyses (2026), each written after a report went wrong in a way the reader could not see: percentages with no sample size, "growth" with no period, "the data shows" with no file behind it, and a number measured at the wrong level of aggregation, which happened four times before "say where, what statistic and at what level" became a rule.
+
+**Evidence.** What was broken on purpose to show that the self-tests can fail is under [Verify](#verify); what was run end to end, and in which agent, is under [Compatibility](#compatibility).
 
 ## Install
 
@@ -109,9 +117,10 @@ python3 scripts/render.py --selftest
 python3 scripts/report_check.py --selftest
 ```
 
-Standard library only, Python 3.9+. Before publishing, the guarded lines of each script were
-mutated one at a time in a sandbox copy and the self-test was confirmed to go red on the named
-assertion, without a traceback; the unmutated control stayed green.
+Python 3.9+, standard library only. Before publishing, every rule line of report_check.py (the checks D01–D10)
+was broken on purpose, one at a time, in a sandbox copy; each break turned the self-test red without a
+traceback, and the unmutated control stayed green. datafile.py, profile.py and render.py have self-tests of
+their own.
 
 ## Limits
 
