@@ -17,12 +17,14 @@ sys.dont_write_bytecode = True
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import datafile  # noqa: E402
+import numsrc  # noqa: E402  — the clickable number sources layer shared with the other nk-* page skills
 import report_check  # noqa: E402
 
 TOKENS = os.path.join(HERE, "..", "assets", "design-tokens.css")
 SOURCE = "https://github.com/NickkkLian/nk-data-story"
 OPNAME = {"==": "=", "!=": "≠", ">": ">", ">=": "≥", "<": "<", "<=": "≤", "in": "in", "not in": "not in"}
 MAX_BARS = 12
+VERSION = "0.1.4"   # written into the sources manifest as the generator
 esc = html.escape
 
 
@@ -84,6 +86,59 @@ def aperture(fig, r, table):
     return " · ".join(p for p in parts if p)
 
 
+def src_id(fid):
+    """the id a figure's number carries on the page (data-nk-src) and in the page's sources manifest"""
+    return "fig." + fid
+
+
+def used_rows(table, fig):
+    """the data rows a figure was computed from, as 1-based positions below the header: for a share the rows counted
+    in the part, for a change the rows of both periods, otherwise the rows inside the filter and the window"""
+    where, window = fig.get("where"), fig.get("window")
+    if fig.get("measure") == "share":
+        whole = datafile.select(table, (fig.get("denominator") or {}).get("where"), window)
+        rows = [r for r in whole if datafile._match(table, r, where)]
+    elif fig.get("measure") == "change":
+        rows = datafile.select(table, where, fig.get("from_window")) + datafile.select(table, where, window)
+    else:
+        rows = datafile.select(table, where, window)
+    pos = {id(r): i + 1 for i, r in enumerate(table.rows)}
+    return [pos[id(r)] for r in rows]
+
+
+def sources(report, figs, results, table, sha256):
+    """the manifest behind every number on the page: which rows, what computation, and what nobody checked"""
+    data = report.get("data") or {}
+    page_wide = ["The checks read the plan's structure, not its meaning: whether a figure answers the question is the reader's call.",
+                 "Numbers written with a decimal comma (1.234,56) stay text and are not counted."]
+    if data.get("synthetic"):
+        page_wide.append("The data is synthetic: invented rows, not real records.")
+    src = numsrc.Sources(f"nk-data-story {VERSION}", inputs=[{"id": "data", "name": os.path.basename(data.get("file") or "data"),
+                         "sha256": sha256, "rows": len(table.rows), "synthetic": bool(data.get("synthetic"))}], not_checked=page_wide)
+    for fid, f in figs.items():
+        if f.get("by"):
+            continue                                  # a grouped figure has no single value on the page
+        r, rows = results[fid], used_rows(table, f)
+        spec = {k: v for k, v in f.items() if k not in ("id", "label")}
+        unchecked = ["Nobody opened these rows to see whether they belong: the filter is applied as written."]
+        if r.get("skipped"):
+            unchecked.append(f"{r['skipped']:,} row(s) with an empty value were left out; why they are empty was not looked into.")
+        unchecked.append("No statistics: no confidence interval, and a change between two periods is not a trend.")
+        src.add(src_id(fid), f.get("label", fid),
+                [{"input": "data", "rows": rows[:50], "rows_total": len(rows),
+                  "text": aperture(f, r, table) + " · row numbers count data rows from 1 below the header"}],
+                "computation", json.dumps(spec, ensure_ascii=False), unchecked,
+                value=value_text(f, r), command="python3 scripts/render.py report.json --out report.html")
+    return src
+
+
+def ledger_value(fid, fig, r):
+    """the value cell of the table of computed numbers: the traced number, or which column a grouped figure is split by"""
+    if fig.get("by"):
+        return '<span data-nk-plain="grouped: drawn as a chart">' + esc("by " + column_text(fig["by"])) + "</span>"
+    return '<span data-nk-src="' + src_id(fid) + '">' + esc(value_text(fig, r)) + "</span>"
+
+
 def bind(text, figs, results, table, cited):
     """Replace {fig:id} with the computed value; remember which figures a sentence cited."""
     out, last = [], 0
@@ -91,7 +146,7 @@ def bind(text, figs, results, table, cited):
         out.append(esc(text[last:m.start()]))
         fid = m.group(1)
         cited.append(fid)
-        out.append(f'<b class="fig" title="{esc(aperture(figs[fid], results[fid], table))}">{esc(value_text(figs[fid], results[fid]))}</b>')
+        out.append(f'<b class="fig" data-nk-src="{src_id(fid)}" title="{esc(aperture(figs[fid], results[fid], table))}">{esc(value_text(figs[fid], results[fid]))}</b>')
         last = m.end()
     out.append(esc(text[last:]))
     return "".join(out)
@@ -103,7 +158,7 @@ def apertures_html(fids, figs, results, table):
         if fid in seen:
             continue
         seen.add(fid)
-        items.append(f'<li><b>{esc(value_text(figs[fid], results[fid]))}</b> {esc(aperture(figs[fid], results[fid], table))}</li>')
+        items.append(f'<li><b data-nk-src="{src_id(fid)}">{esc(value_text(figs[fid], results[fid]))}</b> {esc(aperture(figs[fid], results[fid], table))}</li>')
     return f'<ul class="aperture">{"".join(items)}</ul>' if items else ""
 
 
@@ -302,8 +357,9 @@ def build(report, table, sha256, min_n=30, tokens_css=None):
     charts = "".join(chart_svg(dict(c, subtitle=aperture(figs[c["figure"]], results[c["figure"]], table)), figs[c["figure"]], results[c["figure"]],
                                timeish(figs[c["figure"]].get("by", ""))) for c in report.get("charts") or [])
     ledger = "".join(
-        f'<tr><td class="mono">{esc(fid)}</td><td>{esc(f.get("label", ""))}</td><td class="num">{esc(value_text(f, results[fid]) if not f.get("by") else "by " + column_text(f["by"]))}</td>'
-        f'<td class="num">{results[fid]["n"]:,}</td><td>{esc(aperture(f, results[fid], table))}</td></tr>' for fid, f in figs.items())
+        f'<tr><td class="mono" data-nk-plain="figure id">{esc(fid)}</td><td data-nk-plain="label">{esc(f.get("label", ""))}</td><td class="num">{ledger_value(fid, f, results[fid])}</td>'
+        f'<td class="num" data-nk-plain="n: the rows or periods used, listed in the value\'s source">{results[fid]["n"]:,}</td>'
+        f'<td data-nk-plain="what the value was computed on">{esc(aperture(f, results[fid], table))}</td></tr>' for fid, f in figs.items())
     unanswered = "".join(f"<li>{esc(x)}</li>" for x in report.get("does_not_answer") or [] if x.strip())
     limits = "".join(f"<li>{esc(x)}</li>" for x in report.get("limits") or [] if x.strip())
     checks = ("<section class=\"checks\"><h2>Checks</h2><ul>" + "".join(f'<li class="warn">{esc(c)} {esc(m)}</li>' for c, m in warns) + "</ul></section>") if warns else ""
@@ -334,7 +390,7 @@ def build(report, table, sha256, min_n=30, tokens_css=None):
 <section class="next"><h2>Next step</h2><p>{esc(report.get("next_step", ""))}</p></section>
 <section class="unanswered"><h2>What this report does not answer</h2><ul>{unanswered}</ul></section>
 {f'<section class="limits"><h2>Limits of this data</h2><ul>{limits}</ul></section>' if limits else ""}
-<section><h2>How each number was computed</h2><div class="scroll"><table><thead><tr><th>id</th><th>what</th><th class="num">value</th><th class="num">n</th><th>computed on</th></tr></thead><tbody>{ledger}</tbody></table></div></section>
+<section><h2>How each number was computed</h2><div class="scroll"><table data-nk-scope><thead><tr><th>id</th><th>what</th><th class="num">value</th><th class="num">n</th><th>computed on</th></tr></thead><tbody>{ledger}</tbody></table></div></section>
 {checks}
 </main>
 <footer class="band"><div class="cols">
@@ -345,7 +401,7 @@ def build(report, table, sha256, min_n=30, tokens_css=None):
 {TAIL}
 </body></html>
 """
-    return page, errs, warns
+    return numsrc.inject(page, sources(report, figs, results, table, sha256)), errs, warns
 
 
 def run(report_path, data_path=None, out=None, min_n=30):
@@ -483,6 +539,16 @@ def selftest():
             wd = json.loads(json.dumps(rep))
             wd["figures"][0]["where"] = [["date:weekday", "==", "Mon"]]
             chk("where weekday of date = Mon" in build(wd, t, sha, tokens_css="")[0], "R20 a derived date key reads as words in the notes: weekday of date = Mon")
+            # R22 clickable sources: every number the page computes opens its rows, its computation and what was not checked
+            errors = [f for f in numsrc.check(page) if f[1] == "error"]
+            man = json.loads(re.search(r'<script type="application/json" id="nk-sources">(.*?)</script>', page, re.S).group(1))
+            entry = man["sources"].get("fig." + rep["figures"][0]["id"], {})
+            chk(errors == [] and entry.get("value") == want and entry["from"][0]["rows_total"] == share["part"]
+                and entry["from"][0]["rows"] == used_rows(t, rep["figures"][0])[:50] and entry.get("not_checked"),
+                f"R22 the page's number sources check clean ({errors}) and the headline share lists its {share['part']} counted rows")
+            cell = f'<span data-nk-src="fig.{rep["figures"][0]["id"]}">{want}</span>'
+            chk(cell in page and any(c == "N06" for c, _, _ in numsrc.check(page.replace(cell, want))),
+                "R22 a value in the table of computed numbers that loses its source is refused (N06)")
             rp = os.path.join(d, "report.json")
             json.dump(rep, open(rp, "w"))
             _, e6, _, out = run(rp)

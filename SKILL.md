@@ -54,6 +54,20 @@ its data is `assets/example/report.json` and `assets/example/bakery-2025.csv`).
 8. **Share the page, not retyped numbers.** The footer pins the file name, its sha256 and the row count, so anyone
    holding the file can recompute every figure.
 
+## Clickable number sources
+
+Click any number the page computed (in the headline, the evidence and the table of computed numbers) and a panel
+shows where it came from: the data rows it was computed on (row numbers counted below the header, the first 50 listed,
+and how many more), the figure exactly as report.json defines it, the command that built the page, and what was not
+checked, such as rows skipped for an empty value. In the table of computed numbers every value must carry its source:
+a value that loses it is refused (render.py's self-test, R22).
+
+The panel is the shared number-sources layer that nk-design, nk-data-story, nk-deck, nk-model and nk-explorer all
+use, the same three files in each (`scripts/numsrc.py`, `assets/numsrc.js`, `assets/numsrc.css`): Tab to a number, Enter
+or Space opens it, Esc closes it and puts the focus back; printed, the numbers are plain text. `python3
+${CLAUDE_SKILL_DIR}/scripts/numsrc.py check page.html` checks a page: every marked number has an entry, every entry says
+where from, how and what was not checked, and the runtime is the shipped one, byte for byte.
+
 ## Checks (`report_check.py`)
 
 | Code | Level | What it refuses or flags |

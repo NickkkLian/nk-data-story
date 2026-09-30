@@ -15,6 +15,7 @@ section below says which of them were broken on purpose before release to prove 
 - `report_check.py` refuses typed numbers, shares without a denominator, changes without two periods, a missing decision and data that does not match its pinned sha256 (checks D01–D10).
 - `render.py` recomputes every number from the file into one HTML page: each figure followed by its n, window and filter, bar and line charts, three palettes in light and dark.
 - Standard library only; CSV and XLSX read locally. Each check has a sample only it catches, and each was broken on purpose to prove the self-test goes red.
+- Click any number on the page to see the data rows it was computed on, the figure's definition, the command and what was not checked (the shared number-sources layer, `numsrc.py`).
 
 The full procedure, the boundaries and where the rules came from are in [SKILL.md](SKILL.md).
 
@@ -112,6 +113,7 @@ In this skill's Codex run, every call into the skill folder's scripts/ used that
 
 ```bash
 python3 scripts/datafile.py --selftest
+python3 scripts/numsrc.py --selftest
 python3 scripts/profile.py --selftest
 python3 scripts/render.py --selftest
 python3 scripts/report_check.py --selftest
@@ -121,6 +123,9 @@ Python 3.9+, standard library only. Before publishing, every rule line of report
 was broken on purpose, one at a time, in a sandbox copy; each break turned the self-test red without a
 traceback, and the unmutated control stayed green. datafile.py, profile.py and render.py have self-tests of
 their own.
+numsrc.py, the number-sources layer shared with four other skills: each of its 16 lines that report a
+finding was disabled in a sandbox copy, found by reading the source rather than listed by hand, and its self-test went
+red each time; the unmutated copy stayed green.
 
 ## Limits
 
