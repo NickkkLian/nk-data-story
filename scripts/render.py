@@ -219,6 +219,7 @@ def chart_svg(chart, fig, r, timeish=False):
 
 CSS = """
 @font-face{font-family:"Fraunces Fallback";src:local("Georgia"),local("Times New Roman");size-adjust:93.3%}
+@font-face{font-family:"Fraunces Fallback";src:local("Georgia Bold"),local("Georgia-Bold"),local("Times New Roman Bold");font-weight:600 700;size-adjust:92.3%}
 @font-face{font-family:"Inter Fallback";src:local("Helvetica Neue"),local("Arial"),local("Segoe UI");size-adjust:106.5%}
 @font-face{font-family:"Space Mono Fallback";src:local("Menlo Regular"),local("Menlo-Regular"),local("Consolas"),local("DejaVu Sans Mono");size-adjust:101.7%}
 *,*::before,*::after{box-sizing:border-box}
