@@ -1,7 +1,8 @@
 {
   "name": "nk-data-story",
+  "displayName": "nk-data-story",
   "description": "Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "author": {
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
