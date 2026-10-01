@@ -1,8 +1,68 @@
 # nk-data-story
 
-![nk-data-story](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/social/nk-data-story.png)
-
 An agent skill for [Claude Code](https://code.claude.com) and [OpenAI Codex](https://developers.openai.com/codex). Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.
+
+**What you get.** The page `render.py` builds from the bundled example, a year of till exports for an invented bakery. The headline is the conclusion, and each number is followed by the rows, the window and the filter it was computed on. Recorded on 2026-09-30 with 0.1.10.
+
+![nk-data-story: a one-page report: the headline is the conclusion, each number is followed by its rows, window and filter](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/results/nk-data-story.png)
+
+## Try it
+
+Nothing is installed and nothing under `~/.claude` changes: clone, run the self-tests, run the example. It writes only `demo*` files inside the clone.
+
+```bash
+git clone https://github.com/NickkkLian/nk-data-story && cd nk-data-story
+python3 scripts/datafile.py --selftest
+python3 scripts/numsrc.py --selftest
+python3 scripts/profile.py --selftest
+python3 scripts/render.py --selftest
+python3 scripts/report_check.py --selftest
+python3 scripts/profile.py assets/example/bakery-2025.csv
+python3 scripts/report_check.py assets/example/report.json
+python3 scripts/render.py assets/example/report.json --out demo-report.html
+```
+
+Each self-test ends on its own line:
+
+```text
+datafile selftest · 42/42 passed
+selftest: 50/50
+profile selftest · 11/11 passed
+render selftest · 25/25 passed
+report_check selftest · 30/30 passed
+```
+
+The example commands print this (recorded in a fresh copy with an empty home folder; the path of the clone is taken out):
+
+```text
+$ python3 scripts/profile.py assets/example/bakery-2025.csv
+bakery-2025.csv · 4996 rows · sha256 586f587ce99f…
+  sale_id              text      missing 0     distinct 4984   S00079 (2), S00558 (2), S00713 (2), S01557 (2)
+  date                 date      missing 0     distinct 379    2025-01-01 → 2025-12-31
+  item                 category  missing 0     distinct 6      croissant (846), cinnamon bun (834), apple tart (832), seed rye (830)
+  qty                  number    missing 0     distinct 3      min 1 · median 1 · max 3
+  amount               number    missing 40    distinct 16     min 3 · median 7.5 · max 24.75
+  status               category  missing 0     distinct 3      paid (4748), void (155), refunded (93)
+  ⚠ 12 duplicate row(s): identical in every column
+$ python3 scripts/report_check.py assets/example/report.json
+⚠ D07  weekday_daily_q4: group(s) Wed, Thu, Fri, Sat, Sun, Mon, Tue computed on fewer than 30 days
+0 error(s), 1 warning(s)
+$ python3 scripts/render.py assets/example/report.json --out demo-report.html
+⚠ D07  weekday_daily_q4: group(s) Wed, Thu, Fri, Sat, Sun, Mon, Tue computed on fewer than 30 days
+written demo-report.html · 1 warning(s)
+```
+
+Open `demo-report.html`: it is the page in the picture above. Click a number to see the rows it was computed on.
+
+### What to type
+
+With the skill installed ([Install](#install)), ask in plain words. This is the request a recorded test run used; it never names the skill:
+
+> sales.csv in this folder is a year of till exports from my bakery. Tell me what it says.
+>
+> I would like one page I can send to my business partner rather than a pile of numbers in a chat: she will ask where each number comes from, and she will want to know what the data cannot tell us before she agrees to anything. A short page is fine — I would rather have something I can open today than a long one next week.
+
+![nk-data-story](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/social/nk-data-story.png)
 
 Part of [nickkk-skills](https://github.com/NickkkLian/nickkk-skills) — agent skills that ship a self-test with every script; the Verify
 section below says which of them were broken on purpose before release to prove they react.
@@ -21,14 +81,14 @@ The full procedure, the boundaries and where the rules came from are in [SKILL.m
 
 ## How it works
 
-1. Profile before reading
-2. Name the decision
-3. Choose two to four figures that could change it
-4. Write the prose with numbers only as references
-5. At most three charts
-6. Check
-7. Render and look at it
-8. Share the page, not retyped numbers
+1. Profile before reading. `python3 scripts/profile.py data.csv --json profile.json`.
+2. Name the decision. Write in `decision` which decision this report can change ("whether to keep opening on Mondays in winter").
+3. Choose two to four figures that could change it.
+4. Write the prose with numbers only as references.
+5. At most three charts. A bar for categories (sorted largest first), a line for periods (in time order).
+6. Check. `python3 scripts/report_check.py report.json` exits 0 only without errors.
+7. Render and look at it. `python3 scripts/render.py report.json --out report.html` refuses while the check has errors.
+8. Share the page, not retyped numbers.
 
 ## Why it is built this way
 
