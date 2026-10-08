@@ -195,6 +195,10 @@ red each time; the unmutated copy stayed green.
 - No statistics: small samples are flagged, not modelled, and a change between two periods is not a trend.
 - The example data is invented (a fictional bakery, seed 7), and marked as synthetic on its page.
 
+## Privacy
+
+This skill's scripts run on your computer, started by the agent you use it in. They read the file you point them at and write two files in the folder you work in, a profile of the data (profile.json: column names, counts and sample values) and the report page; the agent writes report.json there too. The scripts open no network connection and keep nothing else; the profile is also read by the agent as part of your session, and the report page, when opened online, loads its fonts from Google Fonts and remembers a theme choice in the browser. Questions: open an issue on this repository.
+
 ## License
 
 MIT. Read a script before letting it run in your environment.
