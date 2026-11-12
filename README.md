@@ -2,35 +2,24 @@
 
 An agent skill for [Claude Code](https://code.claude.com) and [OpenAI Codex](https://developers.openai.com/codex). Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.
 
-**What you get.** The page `render.py` builds from the bundled example, a year of till exports for an invented bakery. The headline is the conclusion, and each number is followed by the rows, the window and the filter it was computed on. Recorded on 2026-09-30 with 0.1.10.
+**What you get:** the page `render.py` builds from the bundled example, a year of till exports for an invented bakery. The headline is the conclusion, and each number is followed by the rows, the window and the filter it was computed on.
 
 ![nk-data-story: a one-page report: the headline is the conclusion, each number is followed by its rows, window and filter](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/results/nk-data-story.png)
 
+Part of [nickkk-skills](https://github.com/NickkkLian/nickkk-skills): 14 agent skills that work with numbers, check an agent's work, guard a repository, and write and present.
+
 ## Try it
 
-Nothing is installed and nothing under `~/.claude` changes: clone, run the self-tests, run the example. It writes only `demo*` files inside the clone.
+Clone and run the example:
 
 ```bash
 git clone https://github.com/NickkkLian/nk-data-story && cd nk-data-story
-python3 scripts/datafile.py --selftest
-python3 scripts/numsrc.py --selftest
-python3 scripts/profile.py --selftest
-python3 scripts/render.py --selftest
-python3 scripts/report_check.py --selftest
 python3 scripts/profile.py assets/example/bakery-2025.csv
 python3 scripts/report_check.py assets/example/report.json
 python3 scripts/render.py assets/example/report.json --out demo-report.html
 ```
 
-Each self-test ends on its own line:
-
-```text
-datafile selftest · 42/42 passed
-selftest: 50/50
-profile selftest · 11/11 passed
-render selftest · 25/25 passed
-report_check selftest · 30/30 passed
-```
+None of this installs anything or changes `~/.claude`; it writes only `demo*` files inside the clone.
 
 The example commands print this (recorded in a fresh copy with an empty home folder; the path of the clone is taken out):
 
@@ -63,9 +52,6 @@ With the skill installed ([Install](#install)), ask in plain words. This is the 
 > I would like one page I can send to my business partner rather than a pile of numbers in a chat: she will ask where each number comes from, and she will want to know what the data cannot tell us before she agrees to anything. A short page is fine — I would rather have something I can open today than a long one next week.
 
 ![nk-data-story](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/social/nk-data-story.png)
-
-Part of [nickkk-skills](https://github.com/NickkkLian/nickkk-skills) — agent skills that ship a self-test with every script; the Verify
-section below says which of them were broken on purpose before release to prove they react.
 
 ![nk-data-story demo: one idea in, a finished page out](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/nk-data-story.gif)
 
@@ -178,6 +164,18 @@ python3 scripts/profile.py --selftest
 python3 scripts/render.py --selftest
 python3 scripts/report_check.py --selftest
 ```
+
+Each self-test ends on its own line:
+
+```text
+datafile selftest · 42/42 passed
+selftest: 50/50
+profile selftest · 11/11 passed
+render selftest · 25/25 passed
+report_check selftest · 30/30 passed
+```
+
+The picture at the top of this page was recorded on 2026-09-30 with 0.1.10.
 
 Python 3.9+, standard library only. Before publishing, every rule line of report_check.py (the checks D01–D10)
 was broken on purpose, one at a time, in a sandbox copy; each break turned the self-test red without a
