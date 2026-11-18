@@ -2,7 +2,7 @@
 
 An agent skill for [Claude Code](https://code.claude.com) and [OpenAI Codex](https://developers.openai.com/codex). Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.
 
-**What you get:** the page `render.py` builds from the bundled example, a year of till exports for an invented bakery. The headline is the conclusion, and each number is followed by the rows, the window and the filter it was computed on.
+**What you get:** the page `render.py` builds from the bundled example, a year of till exports for an invented bakery.
 
 ![nk-data-story: a one-page report: the headline is the conclusion, each number is followed by its rows, window and filter](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/results/nk-data-story.png)
 
@@ -78,8 +78,6 @@ The full procedure, the boundaries and where the rules came from are in [SKILL.m
 
 ## Why it is built this way
 
-**The idea.** A spreadsheet becomes one page a person can act on: the headline says what the data shows, every number on the page is recomputed from the file and followed by what it was computed on, and the page ends with what the data cannot answer. The agent never types a number into the report.
-
 **Where it came from.** The author's own rules for analyses (2026), each written after a report went wrong in a way the reader could not see: percentages with no sample size, "growth" with no period, "the data shows" with no file behind it, and a number measured at the wrong level of aggregation, which happened four times before "say where, what statistic and at what level" became a rule.
 
 **Evidence.** What was broken on purpose to show that the self-tests can fail is under [Verify](#verify); what was run end to end, and in which agent, is under [Compatibility](#compatibility).
@@ -119,7 +117,7 @@ Without opening a session, the same two steps work from a shell: `claude plugin 
 
 <img src="https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/panel-route/panel-route.gif" alt="Adding the marketplace and installing a skill in the desktop app" width="640">
 
-<sub>Recorded on 2026-09-16, when the marketplace listed ten skills, all at version 0.1.0; it lists more now. The repository list in this recording shows the recorder's own repositories because a GitHub account is connected; yours will show yours. Type the full name as in step 4.</sub>
+<sub>Recorded on 2026-09-16; the marketplace lists more skills now. The repository list shows the recorder's own repositories because a GitHub account is connected; yours will show yours. Type the full name as in step 4.</sub>
 
 1. In the chat box, type `/plugin marketplace` and press Enter (or open **Settings → Customize → Plugins**). The **Plugins** panel opens.
    <br><img src="https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/panel-route/step1-type-plugin-marketplace.png" alt="/plugin marketplace typed in the chat box" width="480">
@@ -182,7 +180,7 @@ was broken on purpose, one at a time, in a sandbox copy; each break turned the s
 traceback, and the unmutated control stayed green. datafile.py, profile.py and render.py have self-tests of
 their own.
 numsrc.py, the number-sources layer shared with four other skills: each of its 16 lines that report a
-finding was disabled in a sandbox copy, found by reading the source rather than listed by hand, and its self-test went
+finding was disabled in a sandbox copy, and its self-test went
 red each time; the unmutated copy stayed green.
 
 ## Limits
